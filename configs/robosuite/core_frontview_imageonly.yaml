@@ -1,0 +1,166 @@
+parameters:
+  seed: 42
+  env:
+    name: robosuite
+    image_key: frontview_image
+    crop_image: true
+    crop_width: 144
+    crop_height: 144
+    crop_center_xy: [104, 144]  # For the Door task center the crop at this location.
+    #crop_center_xy: [128, 128]
+    domain_randomize: true
+    domain_randomization_config:
+      randomize_color: true
+      randomize_camera: true
+      randomize_lighting: true
+      randomize_dynamics: false
+      #if True, randomize on every call to @reset. This, in
+      #    conjunction with setting @randomize_every_n_steps to 0, is useful to
+      #    generate a new domain per episode.
+      randomize_on_reset: true
+      randomize_every_n_steps: 0
+    controller: OSC_POSE
+    robosuite_config:
+      control_freq: 20
+      env_name: Door
+      hard_reset: false
+      horizon: 500
+      ignore_done: true
+      reward_scale: 1.0
+      reward_shaping: true
+      robots: [ Panda ]
+      has_renderer: false
+      has_offscreen_renderer: true
+      use_object_obs: false
+      use_camera_obs: true
+      # ('frontview', 'birdview', 'agentview', 'sideview', 'robot0_robotview', 'robot0_eye_in_hand')
+      camera_names: frontview
+      camera_heights: 256
+      camera_widths: 256
+      camera_depths: false
+  start_rl_training_after: 0
+  num_envs: 1
+  num_val_envs: 10
+  num_episodes_per_val_env_for_reward: 2
+  max_steps: 1000000  # This divided by action_repeat is the max updates.
+  episode_steps: 500  # This divided by action_repeat is the max steps per episode.
+  update_frequency_factor: 0.5
+  initial_data_steps: 1000
+  gamma: 0.99
+  contrastive:
+    inverse_temperature_init: 1.0
+    softmax_over: both
+    #mask_type: exclude_same_sequence
+    #mask_type: exclude_other_sequences
+  include_model_params_in_critic: true
+  sac_deterministic_state: true
+  recon_from_prior: true
+  lr: 3.e-4
+  lr_inverse_temp: 2.e-3
+  lr_actor: 1.e-3
+  lr_critic: 1.e-3
+  lr_alpha: 1.e-3
+  max_grad_norm_wm: 10
+  max_grad_norm_critic: 100
+  max_grad_norm_actor: 10
+  max_grad_norm_log_alpha: 1.0
+  initial_log_alpha: -2.3
+  max_log_alpha: 3.0
+  update_target_critic_after: 1
+  update_target_critic_tau: 0.005
+  weight_decay: 0.0
+  replay_buffer_size: 100000
+  batch_size: 32
+  dynamics_seq_len: 32
+  random_crop: true
+  random_crop_padding: 0
+  same_crop_across_time: true
+  crop_height: 128
+  crop_width: 128
+  rollout_prior_init_t: 10
+  loss_scales:
+    eta_fwd: 0.01
+    eta_r: 1.0
+    eta_inv: 1.0
+    eta_q: 0.5
+    eta_s: 1.0
+  wm:
+    sample_state: true
+    reward_prediction_from_prior: false
+    decode_deterministic: false
+    propagate_deterministic: false
+    obs_encoder:  # Input dims determined by binder symbol dims, or observation model's output dims.
+      fc_activation: elu
+      fc_hiddens: [256, 256]
+      output_activation: identity
+      layer_norm_output: true
+    obs_decoder:
+      fc_activation: elu
+      fc_hiddens: [256, 256]  # Will add another layer to make the output be be the same dim as enocder's input.
+      output_activation: identity
+      layer_norm_output: true
+    reward_net:
+      fc_activation: elu
+      fc_hiddens: [128, 128, 1]
+      output_activation: identity
+    inverse_dynamics:
+      fc_activation: elu
+      fc_hiddens: [128, 128]
+      output_activation: tanh
+    dynamics:
+      discrete: false
+      rnn_state_dims: 200
+      latent_dims: 64
+      forward_dynamics_loss: kl  #neg_log_prob
+      free_kl: 1.0
+      recurrent: true
+      rnn_input:  # Takes as input latent_dims + actions. The output of this is input to GRU.
+        fc_activation: elu
+        fc_hiddens: [400, 400]
+        output_activation: elu
+      posterior:  # Takes as input rnn_state_dims + obs_embed
+        fc_activation: elu
+        fc_hiddens: [400, 400]
+        output_activation: identity  # Outputs logits. Num outputs = stoch_num_softmaxes * stoch_dims_per_softmax
+        layer_norm_output: true
+        layer_norm_affine: true
+      prior:  # takes as input rnn_state_dims
+        fc_activation: elu
+        fc_hiddens: [400, 400, 400]
+        output_activation: identity  # Outputs logits. Num outputs = stoch_num_softmaxes * stoch_dims_per_softmax
+        layer_norm_output: true
+        layer_norm_affine: true
+  encoder:
+    conv_batch_norm: false
+    conv_activation: relu
+    base_num_hid: 1  # The number of filters in fc and conv layers is multiplied by this.
+    conv_filters:
+      - [32, [3, 3], 2, [1, 1]]  # (64)
+      - [32, [3, 3], 2, [1, 1]]  # (32)
+      - [32, [3, 3], 1, [0, 0]]  # (30)
+      - [32, [3, 3], 1, [0, 0]]  # (28)
+      - [32, [3, 3], 1, [0, 0]]  # (26)
+    #conv_filters:
+    #  - [1, [4, 4], 2]  # (64)  # (112)
+    #  - [2, [4, 4], 2]  # (32)  # (56)
+    #  - [2, [4, 4], 2]  # (16)  #(28)
+    #  - [2, [4, 4], 2]  # (8)   # (14)
+    #  - [4, [4, 4], 2]  # (4)   # (7)
+    fc_hiddens: [50]
+    fc_activation: relu
+    fc_batch_norm: false
+    output_activation: identity
+    layer_norm_output: true
+    layer_norm_affine: false
+  actor:
+    fc_activation: relu
+    fc_hiddens: [1024, 1024, 1024]
+    output_activation: identity
+    policy_max_logstd: 2
+    policy_min_logstd: -10
+  critic:
+    fc_activation: relu
+    fc_hiddens: [1024, 1024, 1024, 1]
+    output_activation: identity
+  validate_every_iters: 10
+  print_every: 50
