@@ -75,9 +75,16 @@ To change the distraction setting, modify the `difficulty` parameter in `configs
 To change the domain, modify the `domain` parameter in `configs/dcs/core.yaml`. Possible values are `['ball_in_cup', 'cartpole', 'cheetah', 'finger', 'reacher', 'walker']`.
 
 * To train on Robosuite (Door Task, Franka Panda Arm)
+  
+  - Using RGB image and proprioceptive inputs.
   ```
   conda activate core_robosuite
-  MUJOCO_GL=egl CUDA_VISIBLE_DEVICES=0 python train.py --config configs/robosuite/core_door.yaml
+  MUJOCO_GL=egl CUDA_VISIBLE_DEVICES=0 python train.py --config configs/robosuite/core.yaml
+  ```
+  - Using RGB image inputs only.
+  ```
+  conda activate core_robosuite
+  MUJOCO_GL=egl CUDA_VISIBLE_DEVICES=0 python train.py --config configs/robosuite/core_imageonly.yaml
   ```
 
 ## License
