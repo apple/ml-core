@@ -4,6 +4,7 @@ This code implements the CoRe model and reproduces experimental results found in
 **Robust Robotic Control from Pixels using Contrastive Recurrent State-Space models**<br>
 NeurIPS Deep Reinforcement Learning Workshop 2021 <br>
 Nitish Srivastava, Walter Talbott, Martin Bertran Lopez, Shuangfei Zhai & Joshua M. Susskind<br>
+[paper](https://arxiv.org/abs/2112.01163) <br>
 
 ![cartpole](videos/medium-cartpole.gif)
 
@@ -86,6 +87,16 @@ To change the domain, modify the `domain` parameter in `configs/dcs/core.yaml`. 
   conda activate core_robosuite
   MUJOCO_GL=egl CUDA_VISIBLE_DEVICES=0 python train.py --config configs/robosuite/core_imageonly.yaml
   ```
+
+## Citation
+```
+@article{srivastava2021core,
+    title={Robust Robotic Control from Pixels using Contrastive Recurrent State-Space Models}, 
+    author={Nitish Srivastava and Walter Talbott and Martin Bertran Lopez and Shuangfei Zhai and Josh Susskind},
+    journal={NeurIPS Deep Reinforcement Learning Workshop},
+    year={2021}
+}
+```
 
 ## License
 This code is released under the [LICENSE](LICENSE) terms.
