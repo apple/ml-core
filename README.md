@@ -4,7 +4,7 @@ This code implements the CoRe model and reproduces experimental results found in
 **Robust Robotic Control from Pixels using Contrastive Recurrent State-Space models**<br>
 NeurIPS Deep Reinforcement Learning Workshop 2021 <br>
 Nitish Srivastava, Walter Talbott, Martin Bertran Lopez, Shuangfei Zhai & Joshua M. Susskind<br>
-[paper](https://arxiv.org/abs/2112.01163) <br>
+[[paper](https://arxiv.org/abs/2112.01163)] <br>
 
 ![cartpole](videos/medium-cartpole.gif)
 
